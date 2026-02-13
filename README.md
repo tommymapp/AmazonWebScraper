@@ -12,7 +12,7 @@ Note the project will be utilizing Made Tech's sandbox AWS environment, so the l
 
 With that in mind, here's three tickets to split out the work into a real-life ask:
 
-## Ticket 1: API endpoint for creating price watches
+## Ticket 1 (ref aws-1): API endpoint for creating price watches
 
 User story: 
 As a user, I want to submit a product URL, target price and email so that I can be notified of price drops.
@@ -23,7 +23,7 @@ AC:
 - Given an invalid URL format, a negative price or invalid email address format, when I submit the request, then the system returns a `400 Bad request`
 - Given the system is offline, then the API should return a `503 Service Unavailable`
 
-## Ticket 2: Amazon price extraction logic
+## Ticket 2 (ref aws-2): Amazon price extraction logic
 
 User store: 
 As the system, I need to parse the raw HTML of an Amazon page to find the current price
@@ -33,7 +33,7 @@ AC:
 - Given a HTML string where the price contains a currency symbol, then the parser strips the symbol and return only the numeric value
 - Given  a HTML string where the product is out of stock, or the price tag is missing, then the parser throws a specific `PriceNotFoundException`
 
-## Ticket 3: Background scraper orchestration
+## Ticket 3 (ref aws-3): Background scraper orchestration
 
 User story: 
 As the system, I want to periodically check all active watches so that the price data is kept up to date
