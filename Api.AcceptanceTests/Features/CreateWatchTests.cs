@@ -1,8 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Api.DTOs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 
 namespace Api.AcceptanceTests.Features;
 
@@ -41,5 +42,43 @@ public class CreateWatchTests : BaseAcceptanceTest
         var response = await Client.PostAsJsonAsync("/api/watch", request);
      
         Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, $"Failed on scenario: {scenario}");
+    }
+
+    [TestMethod]
+    public async Task Given_ValidRequest_Then_DataIsInsertedIntoMySQLDB()
+    {
+        var request = new
+        {
+            Url = "https://amazon.co.uk/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
+            TargetPrice = 100,
+            Email = "test@test.com"
+        };
+        
+        var response = await Client.PostAsJsonAsync("/api/watch",  request);
+        var createdWatchResponse = await response.Content.ReadFromJsonAsync<CreateWatchResponse>();
+        var id = createdWatchResponse?.Id;
+
+        Assert.IsNotNull(id, "The API should have returned an Id");
+        await using var connection = new MySqlConnection(MySqlConnectionString);
+        await connection.OpenAsync();
+
+        await using var command = connection.CreateCommand();
+        // Use Parameterized SQL to prevent SQL injection and formatting errors
+        command.CommandText = "SELECT Url, TargetPrice, Email, Status FROM watches WHERE WatchId = @id";
+        command.Parameters.AddWithValue("@id", id);
+
+        await using var reader = await command.ExecuteReaderAsync();
+    
+        if (await reader.ReadAsync()) // You must call ReadAsync() to move to the first row
+        {
+            Assert.AreEqual(request.Url, reader.GetString("Url"));
+            Assert.AreEqual(request.TargetPrice, reader.GetDecimal("TargetPrice"));
+            Assert.AreEqual(request.Email, reader.GetString("Email"));
+            Assert.AreEqual("Active", reader.GetString("Status"));
+        }
+        else
+        {
+            Assert.Fail("No record found in database for the given ID.");
+        }
     }
 }
