@@ -12,7 +12,7 @@ public class WatchDbContext : DbContext
     }
     
     public DbSet<Watch> Watches => Set<Watch>();
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
