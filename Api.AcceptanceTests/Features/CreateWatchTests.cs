@@ -63,13 +63,12 @@ public class CreateWatchTests : BaseAcceptanceTest
         await connection.OpenAsync();
 
         await using var command = connection.CreateCommand();
-        // Use Parameterized SQL to prevent SQL injection and formatting errors
         command.CommandText = "SELECT Url, TargetPrice, Email, Status FROM watches WHERE WatchId = @id";
         command.Parameters.AddWithValue("@id", id);
 
         await using var reader = await command.ExecuteReaderAsync();
     
-        if (await reader.ReadAsync()) // You must call ReadAsync() to move to the first row
+        if (await reader.ReadAsync())
         {
             Assert.AreEqual(request.Url, reader.GetString("Url"));
             Assert.AreEqual(request.TargetPrice, reader.GetDecimal("TargetPrice"));
