@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Testcontainers.MySql;
+using Microsoft.EntityFrameworkCore;
+using Api.Contexts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.AcceptanceTests;
 
 [TestClass]
-public class BaseAcceptanceTest : IAsyncDisposable
+public abstract class BaseAcceptanceTest
 {
-    protected string? MySqlConnectionString { get; }
+    protected static string? MySqlConnectionString { get; private set; }
     private static MySqlContainer mysqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
         .WithDatabase("WatchDb")
@@ -19,24 +23,35 @@ public class BaseAcceptanceTest : IAsyncDisposable
         .WithPassword("password123")
         .Build();
     
-    protected readonly HttpClient Client;
-    readonly WebApplicationFactory<Program> factory;
+    protected static HttpClient Client;
+    static WebApplicationFactory<Program> factory;
     
     [AssemblyInitialize]
     public static async Task AssemblyInitialize(TestContext context)
     {
         await mysqlContainer.StartAsync();
+        MySqlConnectionString = mysqlContainer.GetConnectionString();
+        
+        factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:DefaultConnection"] = mysqlContainer.GetConnectionString()
+                });
+            });
+        });
+
+        Client = factory.CreateClient();
+        
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<WatchDbContext>();
+        await db.Database.EnsureCreatedAsync();
     }
     
-    protected BaseAcceptanceTest()
-    {
-        MySqlConnectionString = mysqlContainer.GetConnectionString();
-
-        factory = new WebApplicationFactory<Program>();
-        Client = factory.CreateClient();
-    }
-
-    public async ValueTask DisposeAsync()
+    [AssemblyCleanup]
+    public static async Task AssemblyCleanup()
     {
         await mysqlContainer.DisposeAsync();
         Client.Dispose();
