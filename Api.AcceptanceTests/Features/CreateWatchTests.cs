@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Api.DTOs;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
 
@@ -79,5 +82,31 @@ public class CreateWatchTests : BaseAcceptanceTest
         {
             Assert.Fail("No record found in database for the given ID.");
         }
+    }
+
+    [TestMethod]
+    public async Task Given_DatabaseIsDown_Then_ReturnsStatus503()
+    {
+        var brokenFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((_, config) =>
+            {
+                config.AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    ["ConnectionStrings:DefaultConnection"] = "Server=localhost;Database=WatchDb;User=root;Password=PLACEHOLDER;"
+                });
+            });
+        });
+        var brokenClient = brokenFactory.CreateClient();
+    
+        var request = new
+        {
+            Url = "https://amazon.co.uk/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
+            TargetPrice = 100,
+            Email = "test@test.com"
+        };
+        var response = await brokenClient.PostAsJsonAsync("/api/watch", request);
+    
+        Assert.AreEqual(HttpStatusCode.ServiceUnavailable, response.StatusCode);
     }
 }

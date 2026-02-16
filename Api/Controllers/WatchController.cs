@@ -28,9 +28,17 @@ public class WatchController : ControllerBase
             TargetPrice =  request.TargetPrice, 
             Status = "Active"
         };
+
+        try
+        {
+            watchDbContext.Watches.Add(watch);
+            await watchDbContext.SaveChangesAsync();
+        }
+        catch (MySql.Data.MySqlClient.MySqlException ex)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, ex.Message);
+        }
         
-        watchDbContext.Watches.Add(watch);
-        await watchDbContext.SaveChangesAsync();
 
         var response = new CreateWatchResponse()
         {
