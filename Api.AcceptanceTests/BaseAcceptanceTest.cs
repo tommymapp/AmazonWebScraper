@@ -16,12 +16,14 @@ namespace Api.AcceptanceTests;
 [TestClass]
 public abstract class BaseAcceptanceTest
 {
+    static string dbPassword = Guid.NewGuid().ToString();
+    
     protected static string? MySqlConnectionString { get; private set; }
     private static MySqlContainer mysqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
         .WithDatabase("WatchDb")
-        .WithUsername("root")
-        .WithPassword("password123")
+        .WithUsername("test_user")
+        .WithPassword(dbPassword)
         .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(3306))
         .Build();
     
