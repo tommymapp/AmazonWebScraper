@@ -63,7 +63,7 @@ public class CreateWatchTests : BaseAcceptanceTest
         await connection.OpenAsync();
 
         await using var command = connection.CreateCommand();
-        command.CommandText = "SELECT Url, TargetPrice, Email, Status FROM watches WHERE WatchId = @id";
+        command.CommandText = "SELECT Url, TargetPrice, Email, Status FROM watches WHERE Id = @id";
         command.Parameters.AddWithValue("@id", id);
 
         await using var reader = await command.ExecuteReaderAsync();
