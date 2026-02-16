@@ -10,7 +10,7 @@ namespace Api.AcceptanceTests.Features;
 public class CreateWatchTests : BaseAcceptanceTest
 {
     [TestMethod]
-    public async Task Given_Amazon_URL_Returns_Status_201()
+    public async Task Given_ValidRequest_Then_ReturnsStatus201()
     {
         var request = new
         {
@@ -34,7 +34,7 @@ public class CreateWatchTests : BaseAcceptanceTest
     // Email
     [DataRow("Invalid Email", "https://amazon.co.uk/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "bad-email")]
     [DataRow("Missing Email", "https://amazon.co.uk/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "")]
-    public async Task Given_Invalid_Payload_Returns_400(string scenario, string url, double price, string email)
+    public async Task Given_InvalidPayload_Then_ReturnsStatus400(string scenario, string url, double price, string email)
     {
         var request = new { Url = url, TargetPrice = price, Email = email };
      
