@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Testcontainers.MySql;
 using Microsoft.EntityFrameworkCore;
 using Api.Contexts;
+using DotNet.Testcontainers.Builders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Api.AcceptanceTests;
@@ -21,6 +22,7 @@ public abstract class BaseAcceptanceTest
         .WithDatabase("WatchDb")
         .WithUsername("root")
         .WithPassword("password123")
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(3306))
         .Build();
     
     protected static HttpClient Client;
