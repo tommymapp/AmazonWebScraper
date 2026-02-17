@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Api.AcceptanceTests;
 
 [TestClass]
-public abstract class BaseAcceptanceTest
+public abstract class SystemTestBase
 {
     static string dbPassword = Guid.NewGuid().ToString();
     

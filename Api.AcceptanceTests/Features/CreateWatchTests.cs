@@ -11,7 +11,7 @@ using MySqlConnector;
 namespace Api.AcceptanceTests.Features;
 
 [TestClass]
-public class CreateWatchTests : BaseAcceptanceTest
+public class CreateWatchTests : SystemTestBase
 {
     [TestMethod]
     public async Task Given_ValidRequest_Then_ReturnsStatus201()
