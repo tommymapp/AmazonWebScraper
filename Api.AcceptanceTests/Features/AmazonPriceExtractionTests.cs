@@ -14,4 +14,14 @@ public class AmazonPriceExtractionTests
         var price = priceParser.GetPrice(html);
         Assert.AreEqual((decimal)expectedPrice, price);
     }
+
+    [TestMethod]
+    [DataRow("<span class=\"a-price-symbol\">£</span><span class=\"a-price-whole\">139<span class=\"a-price-decimal\">.</span></span><span class=\"a-price-fraction\">99</span>", 139.99)]
+    [DataRow("<span class=\"a-price-symbol\">$</span><span class=\"a-price-whole\">12<span class=\"a-price-decimal\">.</span></span><span class=\"a-price-fraction\">99</span>", 12.99)]
+    public void Given_AmazonHTMLWithCurrency_Then_ExtractsCorrectPrice(string html, double expectedPrice)
+    {
+        var priceParser = new AmazonPriceParser();
+        var price = priceParser.GetPrice(html);
+        Assert.AreEqual((decimal)expectedPrice, price);
+    }
 }
