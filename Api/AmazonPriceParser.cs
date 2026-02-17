@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Api.Exceptions;
 
 namespace Api;
 
@@ -6,13 +7,30 @@ public class AmazonPriceParser
 {
     public decimal GetPrice(string html)
     {
-        var regexPattern = "(?<=>)[0-9]+(?=<)";
-        var matches = Regex.Matches(html, regexPattern);
+        if (html == "")
+            throw new PriceNotFoundException();
+
+        var hasWholePricePattern = "(?<=\"a-price-whole\">)[0-9]+(?=<)";
+        var wholePriceMatch = Regex.Match(html, hasWholePricePattern);
+        if(!wholePriceMatch.Success) 
+            throw new PriceNotFoundException();
+
+        string? fractionVal = null;
+        if (html.Contains("a-price-fraction"))
+        {
+            var hasFractionPricePattern = "(?<=\"a-price-fraction\">)[0-9]+(?=<)";
+            var fractionPriceMatch = Regex.Match(html, hasFractionPricePattern);
+            if(!fractionPriceMatch.Success) 
+                throw new PriceNotFoundException();    
+            
+            fractionVal = fractionPriceMatch.Value;
+        }
+        
         return decimal.Parse(
-            matches.Count > 1 ?
-                $"{matches[0].Value}.{matches[1].Value}"
+            fractionVal != null ?
+                $"{wholePriceMatch.Value}.{fractionVal}"
                 :
-                matches[0].Value
+                wholePriceMatch.Value
             );
     }
 }
