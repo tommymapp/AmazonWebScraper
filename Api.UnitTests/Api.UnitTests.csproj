@@ -19,4 +19,10 @@
     <ProjectReference Include="..\Api\Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\TestData\**\*" Link="TestData\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
