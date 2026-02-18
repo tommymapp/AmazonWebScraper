@@ -39,6 +39,6 @@ User story:
 As the system, I want to periodically check all active watches so that the price data is kept up to date
 
 AC:
-- Given multiple `Active` watches exists in DynamoDB, when the background worker triggers, then it fetches the HTML for each URL
-- Given a successfully parsed price, then the system updates the corresponding DynamoDB record with `LastCheckedAt` and `CurrentPrice`
+- Given multiple `Active` watches exists in MySQL, when the background worker triggers, then it fetches the HTML for each URL
+- Given a successfully parsed price, then the system updates the corresponding MySQL record with `LastCheckedAt` and `CurrentPrice`
 - Given a scraping attempt fails, then the system increments a `RetryCount` on the record and logs the error
