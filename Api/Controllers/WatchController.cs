@@ -20,14 +20,14 @@ public class WatchController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateWatchRequest request)
     {
-        var watch = new Watch()
-        {
-            Id = Guid.NewGuid(), 
-            Url =  request.Url, 
-            Email =  request.Email, 
-            TargetPrice =  request.TargetPrice, 
-            Status = "Active"
-        };
+        var watch = new Watch(
+            Guid.NewGuid(), 
+            request.Url,
+            request.TargetPrice,
+            request.Email, 
+            "Active",
+            "amazon.co.uk"
+        );
 
         try
         {

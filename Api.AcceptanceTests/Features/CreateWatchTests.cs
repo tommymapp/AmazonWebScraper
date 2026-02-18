@@ -73,7 +73,8 @@ public class CreateWatchTests : SystemTestBase
     
         if (await reader.ReadAsync())
         {
-            Assert.AreEqual(request.Url, reader.GetString("Url"));
+            var urlWithoutBase = request.Url.Replace("https://amazon.co.uk/", "");
+            Assert.AreEqual(urlWithoutBase, reader.GetString("Url"));
             Assert.AreEqual(request.TargetPrice, reader.GetDecimal("TargetPrice"));
             Assert.AreEqual(request.Email, reader.GetString("Email"));
             Assert.AreEqual("Active", reader.GetString("Status"));
