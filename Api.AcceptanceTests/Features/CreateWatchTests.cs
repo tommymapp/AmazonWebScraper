@@ -18,7 +18,7 @@ public class CreateWatchTests : SystemTestBase
     {
         var request = new
         {
-            Url = $"{MockedAmazonUrl}/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
+            Url = $"{MockedAmazonUrl}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
             TargetPrice = 100,
             Email = "test@test.com"
         };
@@ -33,14 +33,14 @@ public class CreateWatchTests : SystemTestBase
     [DataRow("Missing URL", "", 100, "test@test.com")]
     [DataRow("Invalid URL Format", "not-a-url", 100, "test@test.com")]
     // Target price
-    [DataRow("Free Price", "{url}Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 0, "test@test.com")]
-    [DataRow("Negative Price", "{url}Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", -1, "test@test.com")]
+    [DataRow("Free Price", "{url}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 0, "test@test.com")]
+    [DataRow("Negative Price", "{url}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", -1, "test@test.com")]
     // Email
-    [DataRow("Invalid Email", "{url}Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "bad-email")]
-    [DataRow("Missing Email", "{url}Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "")]
+    [DataRow("Invalid Email", "{url}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "bad-email")]
+    [DataRow("Missing Email", "{url}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB", 100, "")]
     public async Task Given_InvalidPayload_Then_ReturnsStatus400(string scenario, string url, double price, string email)
     {
-        var request = new { Url = url.Replace("{url}", $"{MockedAmazonUrl}/"), TargetPrice = price, Email = email };
+        var request = new { Url = url.Replace("{url}", $"{MockedAmazonUrl}"), TargetPrice = price, Email = email };
      
         var response = await Client.PostAsJsonAsync("/api/watch", request);
      
@@ -52,7 +52,7 @@ public class CreateWatchTests : SystemTestBase
     {
         var request = new
         {
-            Url = $"{MockedAmazonUrl}/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
+            Url = $"{MockedAmazonUrl}/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
             TargetPrice = 100,
             Email = "test@test.com"
         };
@@ -102,7 +102,7 @@ public class CreateWatchTests : SystemTestBase
     
         var request = new
         {
-            Url = "https://amazon.co.uk/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
+            Url = "https://amazon.co.uk/dp/Keychron-K2-HE-Wireless-Mechanical/dp/B0F63BK4ZB",
             TargetPrice = 100,
             Email = "test@test.com"
         };
