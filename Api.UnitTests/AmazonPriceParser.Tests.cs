@@ -60,4 +60,20 @@ public class AmazonPriceParser_Tests
         var price = priceParser.GetPrice(html);
         Assert.AreEqual((decimal)expectedPrice, price);
     }
+    
+    [TestMethod]
+    public void Given_OutOfStockHTML_Then_ThrowsPriceNotFoundException()
+    {
+        var htmlFile = "OutOfStock";
+        var html = File.ReadAllText(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, 
+                "TestData", 
+                $"{htmlFile}.html")
+        );
+        
+        
+        var priceParser = new AmazonPriceParser();
+        Assert.Throws<PriceNotFoundException>(() => priceParser.GetPrice(html));
+    }
 }

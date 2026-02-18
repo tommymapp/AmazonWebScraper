@@ -10,6 +10,12 @@ public class AmazonPriceParser
         if (html == "")
             throw new PriceNotFoundException();
 
+
+        var isUnavailablePattern = "(?<=primary-availability-message\">).+(?=</span>)";
+        var matches = Regex.Matches(html, isUnavailablePattern);
+        if (matches.Any(m => m.Value.Contains("Currently unavailable")))
+            throw new PriceNotFoundException();
+
         var hasWholePricePattern = "(?<=\"a-price-whole\">)[0-9]+(?=<)";
         var wholePriceMatch = Regex.Match(html, hasWholePricePattern);
         if(!wholePriceMatch.Success) 

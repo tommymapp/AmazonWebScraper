@@ -47,4 +47,17 @@ public class AmazonPriceExtractionTests
         var priceParser = new AmazonPriceParser();
         Assert.Throws<PriceNotFoundException>(() => priceParser.GetPrice(html), $"Failed to throw when {scenario}");
     }
+    
+    [TestMethod]
+    public void Given_OutOfStock_Then_ThrowsPriceNotFoundException()
+    {
+        var htmlFile = "OutOfStock";
+        var html = File.ReadAllText(
+            Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, 
+                "TestData", 
+                $"{htmlFile}.html")
+        );
+        Assert.Throws<PriceNotFoundException>(() => new AmazonPriceParser().GetPrice(html));
+    }
 }
