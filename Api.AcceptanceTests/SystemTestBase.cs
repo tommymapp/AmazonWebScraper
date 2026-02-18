@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Api.Contexts;
 using DotNet.Testcontainers.Builders;
 using Microsoft.Extensions.DependencyInjection;
+using WireMock.Server;
 
 namespace Api.AcceptanceTests;
 
@@ -30,9 +31,14 @@ public abstract class SystemTestBase
     protected static HttpClient Client;
     static WebApplicationFactory<Program> factory;
     
+    protected static string MockedAmazonUrl {get; private set;}
+    
     [AssemblyInitialize]
     public static async Task AssemblyInitialize(TestContext context)
     {
+        var server = WireMockServer.Start();
+        MockedAmazonUrl = server.Url!;
+        
         await mysqlContainer.StartAsync();
         MySqlConnectionString = mysqlContainer.GetConnectionString();
         
@@ -42,7 +48,8 @@ public abstract class SystemTestBase
             {
                 config.AddInMemoryCollection(new Dictionary<string, string?>
                 {
-                    ["ConnectionStrings:DefaultConnection"] = mysqlContainer.GetConnectionString()
+                    ["ConnectionStrings:DefaultConnection"] = mysqlContainer.GetConnectionString(),
+                    ["AmazonSettings:BaseUrl"] = server.Url
                 });
             });
         });

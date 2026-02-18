@@ -3,6 +3,7 @@ using Api.DTOs;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Api.Controllers;
 
@@ -11,10 +12,12 @@ namespace Api.Controllers;
 public class WatchController : ControllerBase
 {
     private readonly WatchDbContext watchDbContext;
+    private string baseUrl;
 
-    public WatchController(WatchDbContext watchDbContext)
+    public WatchController(WatchDbContext watchDbContext, IConfiguration config)
     {
         this.watchDbContext = watchDbContext;
+        baseUrl = config["AmazonSettings:BaseUrl"] ?? "amazon.co.uk";
     }
     
     [HttpPost]
@@ -26,7 +29,7 @@ public class WatchController : ControllerBase
             request.TargetPrice,
             request.Email, 
             "Active",
-            "amazon.co.uk"
+            baseUrl
         );
 
         try
