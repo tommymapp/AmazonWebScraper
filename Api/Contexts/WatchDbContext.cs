@@ -26,6 +26,7 @@ public class WatchDbContext(DbContextOptions<WatchDbContext> options) : DbContex
 
     public async Task UpdateWatch(Watch watch)
     {
+        watch.LastChecked = DateTime.UtcNow;
         Watches.Update(watch);
         await SaveChangesAsync();
     }

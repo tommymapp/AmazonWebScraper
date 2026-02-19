@@ -69,11 +69,12 @@ public class BackgroundScraperTests : SystemTestBase
             var db = scope.ServiceProvider.GetRequiredService<WatchDbContext>();
             var watch = await db.Watches.AsNoTracking().FirstOrDefaultAsync(w => w.Id == id);
 
-            if (watch?.Price == expectedPrice) return;
+            if (watch?.Price == expectedPrice &&
+                watch.LastChecked > DateTime.UtcNow.AddMinutes(-1)) 
+                return;
 
             await Task.Delay(200);
         }
 
-        Assert.Fail($"Price for {id} was not updated to {expectedPrice} in time.");
-    }
+        Assert.Fail($"Price for {id} was not updated to {expectedPrice} with a fresh timestamp in time.");    }
 }
