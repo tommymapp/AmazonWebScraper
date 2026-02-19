@@ -15,6 +15,7 @@ builder.Services.AddDbContext<WatchDbContext>((serviceProvider, options) => {
 });
 
 builder.Services.AddScoped<IWatchRepo, WatchDbContext>();
+builder.Services.AddScoped<IAmazonPriceParser, AmazonPriceParser>();
 builder.Services.AddHttpClient<IAmazonWebClient, AmazonWebClient>((serviceProvider, client) =>
 {
     var config = serviceProvider.GetRequiredService<IConfiguration>();

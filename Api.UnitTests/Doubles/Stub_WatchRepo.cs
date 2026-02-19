@@ -10,4 +10,9 @@ public class Stub_WatchRepo : IWatchRepo
     {
         return WatchesToReturn;
     }
+
+    public Task UpdateWatch(Watch watch)
+    {
+        return Task.CompletedTask;
+    }
 }

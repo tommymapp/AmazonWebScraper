@@ -1,9 +1,10 @@
 using System.Text.RegularExpressions;
 using Api.Exceptions;
+using Api.Interfaces;
 
 namespace Api;
 
-public class AmazonPriceParser
+public class AmazonPriceParser : IAmazonPriceParser
 {
     public decimal GetPrice(string html)
     {

@@ -23,4 +23,10 @@ public class WatchDbContext(DbContextOptions<WatchDbContext> options) : DbContex
                 w.LastChecked <= DateTime.UtcNow.AddHours(-24))
             .ToArray();
     }
+
+    public async Task UpdateWatch(Watch watch)
+    {
+        Watches.Update(watch);
+        await SaveChangesAsync();
+    }
 }
