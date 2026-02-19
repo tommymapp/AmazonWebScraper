@@ -8,13 +8,13 @@ public class AmazonWebScraper(IWatchRepo watchRepo, IAmazonWebClient webClient) 
     private readonly IWatchRepo _watchRepo = watchRepo;
     private readonly IAmazonWebClient _webClient = webClient;
 
-    public void Start()
+    public async Task Start()
     {
         var watches = _watchRepo.GetActiveWatches();
         
         foreach (var watch in watches)
         {
-            _webClient.GetAmazonHtml(watch.Url);
+            await _webClient.GetAmazonHtml(watch.Url);
         }
     }
 }

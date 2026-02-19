@@ -1,13 +1,39 @@
+using Api.Contexts;
+using Api.Interfaces;
+using Api.Models;
+using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
+
 namespace Api.AcceptanceTests.Features;
 
 [TestClass]
 public class BackgroundScraperTests : SystemTestBase
 {
-    [TestMethod]
-    public void Given_BackgroundWorkerTrigger_Then_FetchesHTMLForActiveWatchesOlderThan24Hours()
+    [TestMethod]    
+    public async Task Given_BackgroundWorkerTrigger_Then_FetchesHTMLForActiveWatchesOlderThan24Hours()
     {
-        // 1 - Web mock to return html. Ideally also has behavior
-        // 2 - I pre-populated database and check only ones older than 24 hours or null are checked
-        // So basically just check it fetches URLs available in the database
+        var watches = new Watch[]
+        {
+             new Watch(Guid.NewGuid(), $"{MockedAmazonUrl}/BackgroundScraperTests_TestIsRequested", 70, "test@test.com", "Active", MockedAmazonUrl!),
+             new Watch(Guid.NewGuid(), $"{MockedAmazonUrl}/BackgroundScraperTests_TestIsNotRequested", 70, "test@test.com", "Active", MockedAmazonUrl!, DateTime.UtcNow - TimeSpan.FromHours(23) - TimeSpan.FromMinutes(58)),
+             new Watch(Guid.NewGuid(), $"{MockedAmazonUrl}/BackgroundScraperTests_TestIsRequested", 70, "test@test.com", "Active", MockedAmazonUrl!, DateTime.UtcNow - TimeSpan.FromHours(24) - TimeSpan.FromMinutes(2)),
+        };
+
+        using var scope = Factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<WatchDbContext>();
+
+        context.Watches.AddRange(watches);
+        await context.SaveChangesAsync();
+
+        var scraper = scope.ServiceProvider.GetRequiredService<IAmazonWebScraper>();
+         
+        await scraper.Start();
+         
+        await Task.Delay(1000);
+
+        var requests = WireMockServer?.LogEntries;
+        var successfulBackgroundScraperTests = requests?.Where(r => r.RequestMessage.Path.Contains("BackgroundScraperTests_TestIsRequested"));
+        Assert.HasCount(2, successfulBackgroundScraperTests!);
+        Assert.IsFalse(requests?.Any(r => r.RequestMessage.Path.Contains("BackgroundScraperTests_TestIsNotRequested")));
     }
 }

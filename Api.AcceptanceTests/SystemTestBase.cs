@@ -79,7 +79,7 @@ public abstract class SystemTestBase
 
             WireMockServer
                 .Given(Request.Create()
-                    .WithPath($"/dp/{fileName}")
+                    .WithPath($"/{fileName}")
                     .UsingGet())
                 .RespondWith(Response.Create()
                     .WithStatusCode(200)

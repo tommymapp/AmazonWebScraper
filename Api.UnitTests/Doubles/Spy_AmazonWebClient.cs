@@ -9,7 +9,7 @@ public class SpyAmazonWebClient(string baseUrl) : IAmazonWebClient
     public readonly List<string> RequestedUrls = [];
 
 
-    public string GetAmazonHtml(string url)
+    public async Task<string> GetAmazonHtml(string url)
     {
         RequestedUrls.Add($"{baseUrl}/{url}");
         return StubbedPages.TryGetValue(url, out var page) ?  page : "";
