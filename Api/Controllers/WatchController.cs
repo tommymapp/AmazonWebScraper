@@ -3,6 +3,7 @@ using Api.DTOs;
 using Api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Api.Controllers;
 
@@ -11,23 +12,25 @@ namespace Api.Controllers;
 public class WatchController : ControllerBase
 {
     private readonly WatchDbContext watchDbContext;
+    private string baseUrl;
 
-    public WatchController(WatchDbContext watchDbContext)
+    public WatchController(WatchDbContext watchDbContext, IConfiguration config)
     {
         this.watchDbContext = watchDbContext;
+        baseUrl = config["AmazonSettings:BaseUrl"] ?? "amazon.co.uk";
     }
     
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateWatchRequest request)
     {
-        var watch = new Watch()
-        {
-            Id = Guid.NewGuid(), 
-            Url =  request.Url, 
-            Email =  request.Email, 
-            TargetPrice =  request.TargetPrice, 
-            Status = "Active"
-        };
+        var watch = new Watch(
+            Guid.NewGuid(), 
+            request.Url,
+            request.TargetPrice,
+            request.Email, 
+            "Active",
+            baseUrl
+        );
 
         try
         {

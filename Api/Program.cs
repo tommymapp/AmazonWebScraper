@@ -1,4 +1,6 @@
+using Api;
 using Api.Contexts;
+using Api.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,16 @@ builder.Services.AddDbContext<WatchDbContext>((serviceProvider, options) => {
     
     options.UseMySQL(connString!); 
 });
+
+builder.Services.AddScoped<IWatchRepo, WatchDbContext>();
+builder.Services.AddScoped<IAmazonPriceParser, AmazonPriceParser>();
+builder.Services.AddHttpClient<IAmazonWebClient, AmazonWebClient>((serviceProvider, client) =>
+{
+    var config = serviceProvider.GetRequiredService<IConfiguration>();
+    client.BaseAddress = new Uri(config["AmazonSettings:BaseUrl"]!);
+});
+builder.Services.AddScoped<IAmazonWebScraper, AmazonWebScraper>();
+
 
 var app = builder.Build();
 
