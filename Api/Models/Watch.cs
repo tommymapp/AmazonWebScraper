@@ -7,13 +7,15 @@ public class Watch
     public decimal TargetPrice { get; set; }
     public string Email { get; set; } = string.Empty;
     public string Status { get; set; } = "Active";
+    
+    public DateTime? LastChecked { get; set; }
 
     public Watch()
     {
         
     }
     
-    public Watch(Guid id, string url, decimal targetPrice, string email, string status, string baseUrl)
+    public Watch(Guid id, string url, decimal targetPrice, string email, string status, string baseUrl, DateTime? lastChecked = null)
     {
         Id = id;
         var baseUrlIndex = url.IndexOf(baseUrl);
@@ -28,5 +30,6 @@ public class Watch
         TargetPrice = targetPrice;
         Email = email;
         Status = status;
+        LastChecked = lastChecked;
     }
 }
